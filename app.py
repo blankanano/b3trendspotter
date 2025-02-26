@@ -11,6 +11,22 @@ from streamlit_extras.grid import grid
 
 data_hoje = datetime.today()
 periodo_RSI = 14
+colunas_desejadas = ['Fechamento', 'Índice de Força Relativa (RSI)', 'Sinal de Compra']
+
+def formatar_dataframe(dados_ativo):
+    dados_ativo.rename(columns={
+        'Close': 'Fechamento',
+        'Retornos': 'Variação',
+        'Ganhos': 'Ganhos (+)',
+        'Perdas': 'Perdas (-)',
+        'Media_Ganhos': 'Média de Ganhos',
+        'Media_Perdas': 'Média de Perdas',
+        'RS': 'Força Relativa',
+        'RSI': 'Índice de Força Relativa (RSI)',
+        'Compra': 'Sinal de Compra'
+    }, inplace=True)
+    dados_ativo.index.name = 'Data/Hora'  # Alterar o nome da coluna DateTime
+    return dados_ativo
 
 def build_sidebar():
     st.image("imagens/Logo_B3.png")
@@ -84,18 +100,29 @@ def build_sidebar():
         #except Exception as e:
             #st.error(f"Ocorreu um erro ao processar os dados: {e}")        
 
+        dados_ativo = formatar_dataframe(dados_ativo)
+
         return tickers, dados_ativo, data_compra, data_venda
     return None, None, None, None
 
 def build_main(tickers, dados_ativo, data_compra, data_venda):
-    st.dataframe(dados_ativo)
-    st.dataframe(data_compra)
-    st.dataframe(data_venda)
+    colunas_disponiveis = [col for col in colunas_desejadas if col in dados_ativo.columns]
+    dados_ativo = dados_ativo[colunas_disponiveis]   
+
+    dados_ativo_display = dados_ativo.copy()
+    dados_ativo_display.index = dados_ativo_display.index.strftime('%d/%m/%Y %H:%M')
+
+    # Exibir o DataFrame com formatação
+    st.dataframe(
+        dados_ativo_display.style.set_properties(**{'text-align': 'right'})
+        .set_table_styles([{'selector': 'th', 'props': [('max-width', '200px')]}]),
+        use_container_width=True
+    )
 
     plt.figure(figsize = (12, 5))
-    plt.scatter(dados_ativo.loc[data_compra].index, dados_ativo.loc[data_compra]['Close'], marker = '^',
+    plt.scatter(dados_ativo.loc[data_compra].index, dados_ativo.loc[data_compra]['Fechamento'], marker = '^',
     c = 'g')
-    plt.plot(dados_ativo['Close'], alpha = 0.7)   
+    plt.plot(dados_ativo['Fechamento'], alpha = 0.7)   
 
     st.pyplot(plt)
 
