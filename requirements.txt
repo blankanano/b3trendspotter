@@ -75,3 +75,4 @@ urllib3==2.3.0
 validators==0.34.0
 watchdog==6.0.0
 yfinance==0.2.54
+scikit-learn
