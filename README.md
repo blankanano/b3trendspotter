@@ -1,10 +1,22 @@
-# b3trendspotter
+# 📈 B3 TrendSpotter
 
+Identificador de Tendências da Bolsa B3 com análise técnica e modelos preditivos em tempo real (Prophet, ARIMA, Linear e LSTM*).
 
+## 🔧 Como rodar localmente
 
-# python -m venv venv
-# streamlit run app.py
+```bash
+pip install -r requirements.txt
+streamlit run app.py
 
-# pip install streamlit
-# pip install yfinance plotly streamlit-extras
+🚀 Recursos
+Gráficos Candlestick com indicadores técnicos
 
+Alertas de preço personalizados
+
+Previsões com modelos: Linear, Prophet, ARIMA
+
+Gráfico técnico inteligente com sinais visuais
+
+Atualização automática em tempo real
+
+*LSTM em desenvolvimento
