@@ -192,92 +192,17 @@ for i, ticker in enumerate(tickers):
             # st.plotly_chart(fig, use_container_width=True)
 
             # Novo Gráfico Técnico: Candlestick + Médias + RSI
-            # st.subheader(f"📊 Gráfico Técnico Avançado - {ticker}")
-
-            # fig = make_subplots(
-            #     rows=2, cols=1,
-            #     shared_xaxes=True,
-            #     vertical_spacing=0.05,
-            #     row_heights=[0.7, 0.3],
-            #     subplot_titles=(f"Preço + Médias Móveis ({ticker})", "RSI (Índice de Força Relativa)")
-            # )
-
-            # # Candlestick
-            # fig.add_trace(go.Candlestick(
-            #     x=dados.index,
-            #     open=dados['Open'],
-            #     high=dados['High'],
-            #     low=dados['Low'],
-            #     close=dados['Close'],
-            #     name='Candlestick',
-            #     increasing_line_color='green',
-            #     decreasing_line_color='red'
-            # ), row=1, col=1)
-
-            # # Médias móveis
-            # if 'EMA_9' in dados.columns:
-            #     fig.add_trace(go.Scatter(x=dados.index, y=dados['EMA_9'], name='EMA 9', line=dict(color='blue')), row=1, col=1)
-            # if 'EMA_21' in dados.columns:
-            #     fig.add_trace(go.Scatter(x=dados.index, y=dados['EMA_21'], name='EMA 21', line=dict(color='orange')), row=1, col=1)
-
-            # # Anotações de sinais (setas de compra/venda)
-            # for sinal in sinais:
-            #     cor = 'green' if sinal['tipo'] == 'compra' else 'red'
-            #     texto = '📈 Compra' if sinal['tipo'] == 'compra' else '📉 Venda'
-            #     simbolo = 'triangle-up' if sinal['tipo'] == 'compra' else 'triangle-down'
-
-            #     fig.add_trace(go.Scatter(
-            #         x=[sinal["data"]],
-            #         y=[sinal["preco"]],
-            #         mode='markers+text',
-            #         marker=dict(color=cor, size=12, symbol=simbolo),
-            #         text=[texto],
-            #         textposition='top center',
-            #         name=texto,
-            #         showlegend=False,
-            #         legendgroup='sinais'
-            #     ), row=1, col=1)
-
-            # # RSI
-            # if 'RSI' in dados.columns:
-            #     fig.add_trace(go.Scatter(x=dados.index, y=dados['RSI'], name='RSI', line=dict(color='purple')), row=2, col=1)
-            #     fig.update_yaxes(range=[0, 100], row=2, col=1)
-            #     fig.add_hline(y=70, line_dash='dash', line_color='red', row=2, col=1)
-            #     fig.add_hline(y=30, line_dash='dash', line_color='green', row=2, col=1)
-
-            # # Layout
-            # fig.update_layout(
-            #     height=700,
-            #     showlegend=True,
-            #     xaxis_rangeslider_visible=False,
-            #     template="plotly_white"
-            # )
-
-            # st.plotly_chart(fig, use_container_width=True)   
-
-            # Novo Gráfico Técnico Avançado 2.0
             st.subheader(f"📊 Gráfico Técnico Avançado - {ticker}")
 
-            # Define número de linhas baseado nos indicadores
-            linhas = 1
-            if 'Volume' in indicadores:
-                linhas += 1
-            if 'RSI' in indicadores or 'Estocástico' in indicadores:
-                linhas += 1
-            if 'MACD' in indicadores:
-                linhas += 1
-
             fig = make_subplots(
-                rows=linhas, cols=1,
+                rows=2, cols=1,
                 shared_xaxes=True,
-                vertical_spacing=0.03,
-                row_heights=[0.4] + [0.2]*(linhas-1),
-                subplot_titles=[f"{ticker} - Preço"] + [""]*(linhas-1)
+                vertical_spacing=0.05,
+                row_heights=[0.7, 0.3],
+                subplot_titles=(f"Preço + Médias Móveis ({ticker})", "RSI (Índice de Força Relativa)")
             )
 
-            linha_atual = 1
-
-            # 🎯 Preço (Candlestick)
+            # Candlestick
             fig.add_trace(go.Candlestick(
                 x=dados.index,
                 open=dados['Open'],
@@ -287,32 +212,15 @@ for i, ticker in enumerate(tickers):
                 name='Candlestick',
                 increasing_line_color='green',
                 decreasing_line_color='red'
-            ), row=linha_atual, col=1)
+            ), row=1, col=1)
 
             # Médias móveis
             if 'EMA_9' in dados.columns:
-                fig.add_trace(go.Scatter(x=dados.index, y=dados['EMA_9'], name='EMA 9', line=dict(color='blue')), row=linha_atual, col=1)
+                fig.add_trace(go.Scatter(x=dados.index, y=dados['EMA_9'], name='EMA 9', line=dict(color='blue')), row=1, col=1)
             if 'EMA_21' in dados.columns:
-                fig.add_trace(go.Scatter(x=dados.index, y=dados['EMA_21'], name='EMA 21', line=dict(color='orange')), row=linha_atual, col=1)
+                fig.add_trace(go.Scatter(x=dados.index, y=dados['EMA_21'], name='EMA 21', line=dict(color='orange')), row=1, col=1)
 
-            # Bandas de Bollinger
-            if 'BB_Upper' in dados.columns:
-                fig.add_trace(go.Scatter(x=dados.index, y=dados['BB_Upper'], name='Bollinger Superior', line=dict(color='lightgray', dash='dot')), row=linha_atual, col=1)
-            if 'BB_Lower' in dados.columns:
-                fig.add_trace(go.Scatter(x=dados.index, y=dados['BB_Lower'], name='Bollinger Inferior', line=dict(color='lightgray', dash='dot')), row=linha_atual, col=1)
-
-            # Fibonacci (linhas horizontais)
-            fibonacci_colors = ['purple', 'teal', 'gray', 'brown', 'darkred']
-            for idx, col in enumerate([c for c in dados.columns if "Fibo" in c]):
-                fig.add_trace(go.Scatter(
-                    x=dados.index,
-                    y=dados[col],
-                    mode='lines',
-                    name=col,
-                    line=dict(color=fibonacci_colors[idx % len(fibonacci_colors)], dash='dash')
-                ), row=linha_atual, col=1)
-
-            # Sinais de Compra e Venda
+            # Anotações de sinais (setas de compra/venda)
             for sinal in sinais:
                 cor = 'green' if sinal['tipo'] == 'compra' else 'red'
                 texto = '📈 Compra' if sinal['tipo'] == 'compra' else '📉 Venda'
@@ -326,46 +234,26 @@ for i, ticker in enumerate(tickers):
                     text=[texto],
                     textposition='top center',
                     name=texto,
-                    showlegend=False
-                ), row=linha_atual, col=1)
+                    showlegend=False,
+                    legendgroup='sinais'
+                ), row=1, col=1)
 
-            # Volume (barras)
-            if 'Volume' in indicadores:
-                linha_atual += 1
-                fig.add_trace(go.Bar(
-                    x=dados.index, y=dados['Volume'],
-                    name="Volume", marker_color='gray', opacity=0.4
-                ), row=linha_atual, col=1)
+            # RSI
+            if 'RSI' in dados.columns:
+                fig.add_trace(go.Scatter(x=dados.index, y=dados['RSI'], name='RSI', line=dict(color='purple')), row=2, col=1)
+                fig.update_yaxes(range=[0, 100], row=2, col=1)
+                fig.add_hline(y=70, line_dash='dash', line_color='red', row=2, col=1)
+                fig.add_hline(y=30, line_dash='dash', line_color='green', row=2, col=1)
 
-            # RSI e Estocástico
-            if 'RSI' in dados.columns or '%K' in dados.columns:
-                linha_atual += 1
-                if 'RSI' in dados.columns:
-                    fig.add_trace(go.Scatter(x=dados.index, y=dados['RSI'], name='RSI', line=dict(color='purple')), row=linha_atual, col=1)
-                    fig.add_hline(y=70, line_dash='dash', line_color='red', row=linha_atual, col=1)
-                    fig.add_hline(y=30, line_dash='dash', line_color='green', row=linha_atual, col=1)
-                    fig.update_yaxes(range=[0, 100], row=linha_atual, col=1)
-                if '%K' in dados.columns and '%D' in dados.columns:
-                    fig.add_trace(go.Scatter(x=dados.index, y=dados['%K'], name='%K', line=dict(color='blue')), row=linha_atual, col=1)
-                    fig.add_trace(go.Scatter(x=dados.index, y=dados['%D'], name='%D', line=dict(color='orange')), row=linha_atual, col=1)
-
-            # MACD
-            if 'MACD' in dados.columns and 'Signal_Line' in dados.columns:
-                linha_atual += 1
-                fig.add_trace(go.Scatter(x=dados.index, y=dados['MACD'], name='MACD', line=dict(color='black')), row=linha_atual, col=1)
-                fig.add_trace(go.Scatter(x=dados.index, y=dados['Signal_Line'], name='Signal', line=dict(color='red')), row=linha_atual, col=1)
-                fig.add_hline(y=0, line_dash='dot', line_color='gray', row=linha_atual, col=1)
-
-            # Finaliza layout
+            # Layout
             fig.update_layout(
-                height=300 + 200 * (linhas - 1),
+                height=700,
                 showlegend=True,
                 xaxis_rangeslider_visible=False,
-                template="plotly_white",
-                margin=dict(t=40, b=40, l=10, r=10)
+                template="plotly_white"
             )
 
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True)            
 
             # 📊 **Previsão da Tendência Futura**
             # df_tabela["Dias"] = np.arange(len(df_tabela))
